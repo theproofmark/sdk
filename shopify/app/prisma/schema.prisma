@@ -1,0 +1,49 @@
+// Prisma schema for the ShowAd Content Gate Shopify app.
+// Sessions are stored via @shopify/shopify-app-session-storage-prisma.
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = env("DATABASE_URL")
+}
+
+model Session {
+  id            String    @id
+  shop          String
+  state         String
+  isOnline      Boolean   @default(false)
+  scope         String?
+  expires       DateTime?
+  accessToken   String
+  userId        BigInt?
+  firstName     String?
+  lastName      String?
+  email         String?
+  accountOwner  Boolean   @default(false)
+  locale        String?
+  collaborator  Boolean?  @default(false)
+  emailVerified Boolean?  @default(false)
+
+  @@index([shop])
+}
+
+model ShowAdConfig {
+  id                Int      @id @default(autoincrement())
+  shop              String   @unique
+  creatorHash       String
+  apiKey            String
+  redirectSecret    String
+  apiBaseUrl        String   @default("https://ad.proofmark.io")
+  videoAdUrl        String   @default("https://showad.proofmark.io")
+  protectedPaths    String   @default("")
+  excludedPaths     String   @default("")
+  cookieMaxAge      Int      @default(3600)
+  accessPolicyJson  String?
+  createdAt         DateTime @default(now())
+  updatedAt         DateTime @updatedAt
+
+  @@index([shop])
+}

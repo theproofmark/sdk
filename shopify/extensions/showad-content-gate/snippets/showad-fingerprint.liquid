@@ -1,0 +1,49 @@
+{% comment %}
+  Lightweight fingerprint loader. Generates a stable per-browser id stored in
+  localStorage and mirrored into the `showad_fingerprint` cookie so that the
+  app proxy /state route can read it. Loaded once per page; idempotent.
+{% endcomment %}
+<script>
+(function () {
+  if (window.__showadFingerprintReady) return;
+  window.__showadFingerprintReady = true;
+
+  var STORAGE_KEY = 'showad_fp';
+  var COOKIE_NAME = 'showad_fingerprint';
+  var MAX_AGE = 60 * 60 * 24 * 30;
+
+  function readCookie(name) {
+    try {
+      var match = document.cookie.match(new RegExp('(?:^|; )' + name + '=([^;]*)'));
+      return match ? decodeURIComponent(match[1]) : '';
+    } catch (e) { return ''; }
+  }
+
+  function writeCookie(name, value) {
+    var secure = window.location.protocol === 'https:';
+    document.cookie = name + '=' + encodeURIComponent(value)
+      + '; Path=/; Max-Age=' + MAX_AGE + '; SameSite=Lax'
+      + (secure ? '; Secure' : '');
+  }
+
+  function generate() {
+    if (window.crypto && window.crypto.getRandomValues) {
+      var b = new Uint8Array(16);
+      window.crypto.getRandomValues(b);
+      return Array.from(b).map(function (x) { return x.toString(16).padStart(2, '0'); }).join('');
+    }
+    return Math.random().toString(36).slice(2) + Date.now().toString(36);
+  }
+
+  var fp = '';
+  try { fp = window.localStorage.getItem(STORAGE_KEY) || ''; } catch (e) {}
+  if (!fp) fp = readCookie(COOKIE_NAME);
+  if (!fp) {
+    fp = generate();
+    try { window.localStorage.setItem(STORAGE_KEY, fp); } catch (e) {}
+  }
+  if (readCookie(COOKIE_NAME) !== fp) writeCookie(COOKIE_NAME, fp);
+
+  window.ShowAdFingerprint = { get: function () { return fp; } };
+})();
+</script>

@@ -1,0 +1,17 @@
+{
+  "name": "@showad/shopify",
+  "version": "1.0.0",
+  "description": "ShowAd Content Gate — Shopify SDK (Theme App Extension + App Proxy)",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "test": "node --import tsx --test tests/jwt.test.mjs tests/access-policy.test.mjs tests/shopify-proxy-hmac.test.mjs tests/verify.test.mjs"
+  },
+  "devDependencies": {
+    "tsx": "^4.19.1",
+    "typescript": "^5.6.2"
+  },
+  "engines": {
+    "node": ">=20"
+  }
+}

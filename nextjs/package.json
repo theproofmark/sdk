@@ -1,0 +1,80 @@
+{
+  "name": "@showad/nextjs-sdk",
+  "version": "1.0.0",
+  "description": "ShowAd SDK for Next.js - Protect your content with video ad verification",
+  "main": "./dist/index.js",
+  "module": "./dist/index.mjs",
+  "types": "./dist/index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.mjs",
+      "require": "./dist/index.js"
+    },
+    "./middleware": {
+      "types": "./dist/middleware.d.ts",
+      "import": "./dist/middleware.mjs",
+      "require": "./dist/middleware.js"
+    },
+    "./client": {
+      "types": "./dist/client.d.ts",
+      "import": "./dist/client.mjs",
+      "require": "./dist/client.js"
+    },
+    "./server": {
+      "types": "./dist/server.d.ts",
+      "import": "./dist/server.mjs",
+      "require": "./dist/server.js"
+    },
+    "./access-policy": {
+      "types": "./dist/access-policy.d.ts",
+      "import": "./dist/access-policy.mjs",
+      "require": "./dist/access-policy.js"
+    }
+  },
+  "files": [
+    "dist",
+    "src"
+  ],
+  "scripts": {
+    "build": "tsup",
+    "dev": "tsup --watch",
+    "typecheck": "tsc --noEmit",
+    "lint": "eslint src --ext .ts,.tsx",
+    "test": "npm run build && node --test \"tests/**/*.test.mjs\""
+  },
+  "peerDependencies": {
+    "next": ">=13.0.0",
+    "react": ">=18.0.0",
+    "react-dom": ">=18.0.0"
+  },
+  "dependencies": {
+    "@fingerprintjs/fingerprintjs": "^4.2.1",
+    "jose": "^5.2.0"
+  },
+  "overrides": {
+    "postcss": "^8.5.10"
+  },
+  "devDependencies": {
+    "@types/node": "^20.10.0",
+    "@types/react": "^18.2.0",
+    "@types/react-dom": "^18.2.0",
+    "tsup": "^8.0.1",
+    "typescript": "^5.3.0"
+  },
+  "keywords": [
+    "showad",
+    "nextjs",
+    "sdk",
+    "video-ads",
+    "content-protection",
+    "monetization"
+  ],
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/proofmark/showad-nextjs-sdk"
+  },
+  "author": "ProofMark"
+}
+

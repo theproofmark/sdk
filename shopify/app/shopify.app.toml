@@ -1,0 +1,40 @@
+# Shopify App configuration for ShowAd Content Gate.
+# Generated structure compatible with `shopify app dev` (Shopify CLI 3.x).
+# Replace `client_id` with your real client_id after `shopify app config link`.
+
+name = "showad-content-gate"
+client_id = "REPLACE_WITH_SHOPIFY_CLIENT_ID"
+application_url = "https://example.com"
+embedded = true
+
+[access_scopes]
+scopes = "write_products,read_themes"
+use_legacy_install_flow = false
+
+[auth]
+redirect_urls = [
+  "https://example.com/auth/callback",
+  "https://example.com/auth/shopify/callback",
+  "https://example.com/api/auth/callback",
+]
+
+[webhooks]
+api_version = "2024-10"
+
+[[webhooks.subscriptions]]
+topics = ["app/uninstalled"]
+uri = "/webhooks/app/uninstalled"
+
+[pos]
+embedded = false
+
+[build]
+include_config_on_deploy = true
+
+[app_proxy]
+url = "https://example.com/proxy"
+prefix = "apps"
+subpath = "showad-gate"
+
+[points_of_contact]
+email = "support@proofmark.io"

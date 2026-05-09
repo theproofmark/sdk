@@ -1,0 +1,61 @@
+[build-system]
+requires = ["hatchling>=1.18"]
+build-backend = "hatchling.build"
+
+[project]
+name = "proofmark-showad"
+version = "1.0.0"
+description = "ProofMark ShowAd content-gating SDK for Python (Django, FastAPI, Starlette, Flask)"
+readme = "README.md"
+requires-python = ">=3.9"
+license = { text = "MIT" }
+authors = [{ name = "ProofMark" }]
+keywords = ["proofmark", "showad", "content-gating", "advertising", "middleware"]
+classifiers = [
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3.9",
+    "Programming Language :: Python :: 3.10",
+    "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.12",
+    "Framework :: Django",
+    "Framework :: FastAPI",
+    "Framework :: Flask",
+    "License :: OSI Approved :: MIT License",
+    "Operating System :: OS Independent",
+    "Topic :: Internet :: WWW/HTTP",
+]
+dependencies = []
+
+[project.optional-dependencies]
+httpx = ["httpx>=0.24"]
+django = ["django>=4.2"]
+fastapi = ["fastapi>=0.100", "starlette>=0.27"]
+flask = ["flask>=2.3"]
+test = [
+    "pytest>=7.4",
+    "pytest-asyncio>=0.21",
+    "httpx>=0.24",
+    "respx>=0.20",
+    "django>=4.2",
+    "fastapi>=0.100",
+    "starlette>=0.27",
+    "flask>=2.3",
+]
+
+[project.urls]
+Homepage = "https://proofmark.io"
+Documentation = "https://proofmark.io/docs"
+Repository = "https://github.com/proofmark/proofmark"
+
+[tool.hatch.build.targets.wheel]
+packages = ["src/proofmark_showad"]
+
+[tool.hatch.build.targets.sdist]
+include = ["src/proofmark_showad", "README.md", "pyproject.toml"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+asyncio_mode = "auto"
+filterwarnings = [
+    "ignore::DeprecationWarning",
+]

@@ -1,0 +1,85 @@
+.showad-gate {
+  position: relative;
+  margin: 1rem 0;
+}
+
+.showad-gate__locked {
+  border: 1px solid rgba(0, 0, 0, 0.1);
+  border-radius: 8px;
+  padding: 2rem 1.5rem;
+  text-align: center;
+  background: var(--showad-locked-bg, #f7f7f7);
+}
+
+.showad-gate__locked-message {
+  margin-bottom: 1rem;
+  font-size: 1rem;
+  line-height: 1.5;
+}
+
+.showad-gate__btn {
+  display: inline-block;
+  padding: 0.75rem 1.5rem;
+  border: 0;
+  border-radius: 999px;
+  background: #1a1a1a;
+  color: #fff;
+  font-size: 0.95rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: opacity 0.15s ease;
+}
+
+.showad-gate__btn:hover {
+  opacity: 0.9;
+}
+
+.showad-gate__btn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.showad-gate__note {
+  margin-top: 0.75rem;
+  font-size: 0.85rem;
+  color: rgba(0, 0, 0, 0.6);
+}
+
+.showad-gate__loading {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 2rem;
+}
+
+.showad-gate__spinner {
+  width: 24px;
+  height: 24px;
+  border: 2px solid rgba(0, 0, 0, 0.15);
+  border-top-color: #1a1a1a;
+  border-radius: 50%;
+  animation: showad-spin 0.7s linear infinite;
+}
+
+@keyframes showad-spin {
+  to { transform: rotate(360deg); }
+}
+
+@media (prefers-color-scheme: dark) {
+  .showad-gate__locked {
+    background: #1f1f1f;
+    border-color: rgba(255, 255, 255, 0.1);
+    color: #fafafa;
+  }
+  .showad-gate__btn {
+    background: #fafafa;
+    color: #1a1a1a;
+  }
+  .showad-gate__note {
+    color: rgba(255, 255, 255, 0.6);
+  }
+  .showad-gate__spinner {
+    border-color: rgba(255, 255, 255, 0.2);
+    border-top-color: #fafafa;
+  }
+}

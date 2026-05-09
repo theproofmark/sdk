@@ -1,0 +1,111 @@
+{% comment %}
+  ShowAd Content Gate — Theme App Block.
+
+  Drop this block on any Shopify page or section that should be gated. The
+  block hides its inner content until /apps/showad-gate/proxy/state returns
+  { verified: true }, and otherwise shows the configured locked message + a
+  "Watch ad to unlock" button.
+
+  All secrets stay server-side: this block only knows the app proxy URL.
+{% endcomment %}
+
+{{ 'showad-gate.css' | asset_url | stylesheet_tag }}
+
+{%- assign gate_id = 'showad-gate-' | append: block.id -%}
+{%- assign proxy_state = block.settings.proxy_state_path | default: '/apps/showad-gate/proxy/state' -%}
+{%- assign proxy_claim = block.settings.proxy_claim_path | default: '/apps/showad-gate/proxy/claim' -%}
+{%- assign protected_path = block.settings.protected_path | default: request.path -%}
+
+<div
+  id="{{ gate_id }}"
+  class="showad-gate"
+  data-showad-gate
+  data-proxy-state="{{ proxy_state }}"
+  data-proxy-claim="{{ proxy_claim }}"
+  data-protected-path="{{ protected_path | escape }}"
+  data-button-text="{{ block.settings.button_text | default: 'Watch ad to unlock' | escape }}"
+>
+  <div class="showad-gate__locked" data-showad-locked hidden>
+    <div class="showad-gate__locked-message">
+      {{ block.settings.locked_message | default: '<p>This content is locked. Watch a short ad to unlock.</p>' }}
+    </div>
+    <button type="button" class="showad-gate__btn" data-showad-unlock-btn>
+      {{ block.settings.button_text | default: 'Watch ad to unlock' }}
+    </button>
+    <p class="showad-gate__note" data-showad-status></p>
+  </div>
+
+  <div class="showad-gate__verified" data-showad-verified hidden>
+    {%- if block.blocks.size > 0 -%}
+      {%- for nested in block.blocks -%}
+        {%- render nested -%}
+      {%- endfor -%}
+    {%- else -%}
+      {{ block.settings.verified_content }}
+    {%- endif -%}
+  </div>
+
+  <div class="showad-gate__loading" data-showad-loading>
+    <div class="showad-gate__spinner" aria-label="Loading"></div>
+  </div>
+</div>
+
+{% render 'showad-fingerprint' %}
+<script src="{{ 'showad-client.js' | asset_url }}" defer></script>
+
+{% schema %}
+{
+  "name": "ShowAd Gate",
+  "target": "section",
+  "settings": [
+    {
+      "type": "header",
+      "content": "Locked state"
+    },
+    {
+      "type": "richtext",
+      "id": "locked_message",
+      "label": "Locked message",
+      "default": "<p>This content is locked. Watch a short ad to unlock.</p>"
+    },
+    {
+      "type": "text",
+      "id": "button_text",
+      "label": "Button text",
+      "default": "Watch ad to unlock"
+    },
+    {
+      "type": "header",
+      "content": "Verified state"
+    },
+    {
+      "type": "richtext",
+      "id": "verified_content",
+      "label": "Verified content",
+      "info": "Shown when the visitor has watched the video ad. Leave empty to show whatever you place inside this block in the theme editor."
+    },
+    {
+      "type": "header",
+      "content": "Advanced"
+    },
+    {
+      "type": "text",
+      "id": "protected_path",
+      "label": "Protected slug",
+      "info": "The path this block protects. Defaults to the current page path."
+    },
+    {
+      "type": "text",
+      "id": "proxy_state_path",
+      "label": "App proxy state URL",
+      "default": "/apps/showad-gate/proxy/state"
+    },
+    {
+      "type": "text",
+      "id": "proxy_claim_path",
+      "label": "App proxy claim URL",
+      "default": "/apps/showad-gate/proxy/claim"
+    }
+  ]
+}
+{% endschema %}

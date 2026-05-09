@@ -1,0 +1,59 @@
+{
+    "name": "proofmark/showad-php",
+    "description": "Framework-agnostic PHP SDK for ProofMark ShowAd content gating - protect content with video ad verification",
+    "type": "library",
+    "license": "MIT",
+    "homepage": "https://proofmark.io",
+    "support": {
+        "source": "https://github.com/proofmark/proofmark/tree/main/sdks/php",
+        "docs": "https://proofmark.io/docs"
+    },
+    "keywords": [
+        "showad",
+        "proofmark",
+        "sdk",
+        "video-ads",
+        "content-gating",
+        "monetization",
+        "psr-15",
+        "middleware"
+    ],
+    "authors": [
+        {
+            "name": "ProofMark",
+            "email": "dev@proofmark.io"
+        }
+    ],
+    "require": {
+        "php": ">=7.4",
+        "ext-json": "*",
+        "ext-curl": "*"
+    },
+    "require-dev": {
+        "phpunit/phpunit": "^9.5",
+        "psr/http-message": "^1.1 || ^2.0",
+        "psr/http-server-middleware": "^1.0",
+        "psr/http-server-handler": "^1.0",
+        "symfony/http-foundation": "^5.4 || ^6.0 || ^7.0"
+    },
+    "suggest": {
+        "psr/http-message": "Required to use the PSR-7 request adapter",
+        "psr/http-server-middleware": "Required to use the PSR-15 middleware",
+        "symfony/http-foundation": "Required to use the Symfony request adapter"
+    },
+    "autoload": {
+        "psr-4": {
+            "ProofMark\\ShowAd\\": "src/"
+        }
+    },
+    "autoload-dev": {
+        "psr-4": {
+            "ProofMark\\ShowAd\\Tests\\": "tests/"
+        }
+    },
+    "scripts": {
+        "test": "phpunit"
+    },
+    "minimum-stability": "stable",
+    "prefer-stable": true
+}

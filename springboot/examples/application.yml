@@ -1,0 +1,43 @@
+showad:
+  enabled: true
+  creator-hash: ${SHOWAD_CREATOR_HASH}
+  api-key: ${SHOWAD_API_KEY}
+  redirect-secret: ${SHOWAD_REDIRECT_SECRET}
+  api-base-url: https://ad.proofmark.io
+  video-ad-url: https://showad.proofmark.io
+  validate-on-backend: true
+  debug: false
+
+  protected-paths:
+    - /premium/**
+    - /pro/**
+  excluded-paths:
+    - /actuator/**
+    - /health
+
+  cookie:
+    prefix: showad
+    max-age: 3600
+    same-site: Lax
+    # secure: true   # leave unset to follow request.isSecure()
+
+  http:
+    connect-timeout-millis: 5000
+    read-timeout-millis: 10000
+
+  access-policy:
+    enabled: true
+    # Only list headers set by your trusted reverse proxy.
+    trusted-ip-headers:
+      - X-Forwarded-For
+      - X-Real-IP
+    allow-cidrs:
+      - 10.0.0.0/8
+    crawler:
+      enabled: true
+      allow-cloudflare-verified-bot: true
+      family-cidrs:
+        google:
+          - 66.249.64.0/19
+        bing:
+          - 40.77.167.0/24

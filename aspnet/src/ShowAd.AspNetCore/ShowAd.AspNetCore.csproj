@@ -1,0 +1,36 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFrameworks>net6.0;net7.0;net8.0</TargetFrameworks>
+    <Nullable>enable</Nullable>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <LangVersion>latest</LangVersion>
+    <TreatWarningsAsErrors>false</TreatWarningsAsErrors>
+    <GenerateDocumentationFile>true</GenerateDocumentationFile>
+    <NoWarn>$(NoWarn);CS1591</NoWarn>
+
+    <PackageId>ProofMark.ShowAd.AspNetCore</PackageId>
+    <Version>1.0.0</Version>
+    <Authors>ProofMark</Authors>
+    <Company>ProofMark</Company>
+    <Product>ShowAd ASP.NET Core Middleware</Product>
+    <Description>ASP.NET Core middleware for ProofMark ShowAd content gating. Verifies JWT cookies, claims redirect tickets, and redirects unverified visitors to the video ad flow.</Description>
+    <PackageTags>proofmark;showad;aspnetcore;middleware;content-gating;ads</PackageTags>
+    <PackageProjectUrl>https://proofmark.io</PackageProjectUrl>
+    <RepositoryUrl>https://github.com/proofmark/proofmark</RepositoryUrl>
+    <RepositoryType>git</RepositoryType>
+    <PackageLicenseExpression>MIT</PackageLicenseExpression>
+    <PackageReadmeFile>README.md</PackageReadmeFile>
+    <IncludeSymbols>true</IncludeSymbols>
+    <SymbolPackageFormat>snupkg</SymbolPackageFormat>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <FrameworkReference Include="Microsoft.AspNetCore.App" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Include="../../README.md" Pack="true" PackagePath="\" Condition="Exists('../../README.md')" />
+  </ItemGroup>
+
+</Project>

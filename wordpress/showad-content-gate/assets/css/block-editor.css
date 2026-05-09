@@ -1,0 +1,16 @@
+/**
+ * ShowAd Block Editor Styles.
+ */
+
+/* Gate block in editor */
+.wp-block-showad-gate {
+  position: relative;
+}
+
+.wp-block-showad-gate .showad-gate__overlay {
+  padding: 24px;
+  text-align: center;
+  background: linear-gradient(135deg, #f5f7fa 0%, #e8ecf1 100%);
+  border: 1px solid #dde1e7;
+  border-radius: 8px;
+}

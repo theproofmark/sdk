@@ -1,0 +1,124 @@
+/**
+ * ShowAd Gate — Front-End Styles.
+ */
+
+/* Gate container — locked state */
+.showad-gate--locked {
+  position: relative;
+  overflow: hidden;
+  border-radius: 8px;
+  min-height: 120px;
+}
+
+/* Overlay */
+.showad-gate__overlay {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 32px 24px;
+  text-align: center;
+  background: linear-gradient(135deg, #f5f7fa 0%, #e8ecf1 100%);
+  border: 1px solid #dde1e7;
+  border-radius: 8px;
+}
+
+/* Lock icon */
+.showad-gate__lock-icon {
+  color: #667085;
+  margin-bottom: 16px;
+}
+
+.showad-gate__lock-icon svg {
+  width: 48px;
+  height: 48px;
+}
+
+/* Message */
+.showad-gate__message {
+  color: #344054;
+  font-size: 16px;
+  line-height: 1.5;
+  margin: 0 0 20px;
+  max-width: 400px;
+}
+
+/* Unlock button */
+.showad-gate__button,
+.showad-redirect-button {
+  display: inline-block;
+  padding: 12px 28px;
+  background: #2563eb;
+  color: #fff !important;
+  text-decoration: none !important;
+  border-radius: 6px;
+  font-size: 15px;
+  font-weight: 600;
+  line-height: 1;
+  border: none;
+  cursor: pointer;
+  transition: background 0.2s ease, transform 0.1s ease;
+}
+
+.showad-gate__button:hover,
+.showad-redirect-button:hover {
+  background: #1d4ed8;
+  transform: translateY(-1px);
+}
+
+.showad-gate__button:active,
+.showad-redirect-button:active {
+  transform: translateY(0);
+}
+
+/* Unlocked state */
+.showad-gate--unlocked {
+  /* No visual changes — content renders normally */
+}
+
+/* Widget button */
+.showad-widget-button {
+  display: block;
+  width: 100%;
+  text-align: center;
+  box-sizing: border-box;
+  margin-top: 12px;
+}
+
+/* Expiry countdown */
+.showad-expiry-countdown {
+  font-family: 'SF Mono', 'Menlo', 'Monaco', 'Consolas', monospace;
+  font-size: 14px;
+  color: #667085;
+}
+
+/* Debug panel accessible improvements */
+.showad-debug {
+  transition: opacity 0.2s ease;
+}
+
+.showad-debug:hover {
+  opacity: 0.95;
+}
+
+/* Responsive */
+@media (max-width: 480px) {
+  .showad-gate__overlay {
+    padding: 24px 16px;
+  }
+
+  .showad-gate__message {
+    font-size: 14px;
+  }
+
+  .showad-gate__button,
+  .showad-redirect-button {
+    padding: 10px 20px;
+    font-size: 14px;
+  }
+
+  .showad-gate__lock-icon svg {
+    width: 36px;
+    height: 36px;
+  }
+}

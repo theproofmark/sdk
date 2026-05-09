@@ -1,0 +1,7 @@
+name = "showad-content-gate"
+roles = ["frontend", "backend"]
+webhooks_path = "/webhooks"
+
+[commands]
+predev = "npm run prisma:generate"
+dev = "npm run dev"
