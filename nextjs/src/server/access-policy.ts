@@ -223,7 +223,12 @@ function ipMatchesCidr(ip: string, cidr: string): boolean {
 }
 
 function parseIp(ip: string): { value: bigint; bits: 32 | 128 } | null {
-  const value = ip.trim();
+  let value = ip.trim();
+  // Strip IPv6 zone identifier (e.g. fe80::1%eth0)
+  const zoneIdx = value.indexOf('%');
+  if (zoneIdx !== -1) {
+    value = value.slice(0, zoneIdx);
+  }
   if (value.includes(':')) {
     return parseIpv6(value);
   }

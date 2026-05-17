@@ -29,7 +29,7 @@ function showad_is_verified() {
  *     @type bool        $is_verified  Whether the user is verified.
  *     @type string      $reason       Verification reason code.
  *     @type string|null $creator_hash Creator hash.
- *     @type int|null    $expires_at   Expiry in milliseconds.
+ *     @type int|null    $expires_at   Expiry in Unix seconds (matches JWT `exp` claim).
  *     @type string|null $redirect_url Video ad redirect URL.
  * }
  */

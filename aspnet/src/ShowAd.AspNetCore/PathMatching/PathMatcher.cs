@@ -1,10 +1,18 @@
+using System.Collections.Concurrent;
 using System.Text.RegularExpressions;
 
 namespace ShowAd.AspNetCore.PathMatching;
 
-/// <summary>Glob-style path matching with <c>*</c> wildcards.</summary>
+/// <summary>
+/// Glob-style path matching with <c>*</c> wildcards.
+/// Compiled regexes are cached (bounded to avoid unbounded growth under
+/// attacker-supplied pattern enumeration).
+/// </summary>
 public static class PathMatcher
 {
+    private const int CacheMax = 1024;
+    private static readonly ConcurrentDictionary<string, Regex> RegexCache = new();
+
     public static bool Matches(string path, string pattern)
     {
         var p = Normalize(path);
@@ -16,8 +24,18 @@ public static class PathMatcher
         if (!pat.Contains('*'))
             return false;
 
-        var regex = "^" + Regex.Escape(pat).Replace("\\*", ".*") + "$";
-        return Regex.IsMatch(p, regex);
+        var regex = RegexCache.GetOrAdd(pat, key =>
+        {
+            // Bound the cache to avoid unbounded growth if patterns vary.
+            if (RegexCache.Count >= CacheMax)
+            {
+                RegexCache.Clear();
+            }
+            var pattern = "^" + Regex.Escape(key).Replace("\\*", ".*") + "$";
+            return new Regex(pattern, RegexOptions.Compiled | RegexOptions.CultureInvariant, TimeSpan.FromMilliseconds(50));
+        });
+
+        return regex.IsMatch(p);
     }
 
     public static bool MatchesAny(string path, IEnumerable<string> patterns)

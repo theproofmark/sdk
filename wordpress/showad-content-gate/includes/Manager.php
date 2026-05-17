@@ -446,13 +446,13 @@ class Manager {
             $this->set_cookie( $this->cookie_name( self::COOKIE_TICKET ), $data['ticket_id'], $cookie_options );
         }
 
-        // Expires timestamp (ms for JS compatibility).
-        $this->set_cookie( $this->cookie_name( self::COOKIE_EXPIRES ), strval( $expires * 1000 ), $cookie_options );
+        // Expires timestamp (Unix seconds, matching JWT exp claim).
+        $this->set_cookie( $this->cookie_name( self::COOKIE_EXPIRES ), strval( $expires ), $cookie_options );
 
-        // Meta cookie with JSON data.
+        // Meta cookie with JSON data (timestamps in Unix seconds).
         $meta = wp_json_encode( array(
-            'createdAt' => time() * 1000,
-            'expiresAt' => $expires * 1000,
+            'createdAt' => time(),
+            'expiresAt' => $expires,
         ) );
         $this->set_cookie( $this->cookie_name( self::COOKIE_META ), $meta, $cookie_options );
     }

@@ -6,10 +6,10 @@ Protected routes rely on browser fingerprinting. For first-time visitors, the mi
 
 ## Requirements
 
-- PHP >= 7.1
-- Laravel >= 5.5
+- PHP >= 8.2
+- Laravel >= 11.0 (Laravel 12 also supported)
 
-The server-side package API supports Laravel 5.5 and above. The published Inertia frontend helpers are intended for current Laravel starter-kit stacks using Inertia with Vue 3 or React.
+The server-side package API targets modern Laravel. The published Inertia frontend helpers are intended for current Laravel starter-kit stacks using Inertia with Vue 3 or React.
 
 ## Installation
 

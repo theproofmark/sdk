@@ -27,6 +27,11 @@ func MatchAny(pathname string, patterns []string) bool {
 	return false
 }
 
+// globCacheMax bounds the size of the regex cache to prevent unbounded growth
+// when many unique patterns flow through the matcher (e.g. attacker-supplied
+// patterns or long-running servers with many distinct ProtectedPaths).
+const globCacheMax = 1024
+
 var (
 	globCache = struct {
 		sync.RWMutex
@@ -63,6 +68,11 @@ func globRegex(pattern string) *regexp.Regexp {
 	}
 
 	globCache.Lock()
+	if len(globCache.m) >= globCacheMax {
+		// Simple bound: clear when we hit the cap. Rebuilds are cheap relative
+		// to a runaway memory footprint.
+		globCache.m = make(map[string]*regexp.Regexp, globCacheMax)
+	}
 	globCache.m[pattern] = re
 	globCache.Unlock()
 	return re

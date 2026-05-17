@@ -57,7 +57,7 @@ def build_set_cookie_specs(
     token: Optional[str],
     creator_hash: Optional[str],
     ticket_id: Optional[str],
-    token_expiry_ms: Optional[int],
+    token_expiry: Optional[int],
     secure: bool,
 ) -> list:
     """Build a list of :class:`CookieSpec` to set verification cookies."""
@@ -107,11 +107,11 @@ def build_set_cookie_specs(
                 same_site=same_site,
             )
         )
-    if token_expiry_ms is not None:
+    if token_expiry is not None:
         specs.append(
             CookieSpec(
                 name=cookie_name(prefix, COOKIE_EXPIRES),
-                value=str(token_expiry_ms),
+                value=str(token_expiry),
                 max_age=max_age,
                 secure=secure,
                 same_site=same_site,

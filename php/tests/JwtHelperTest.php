@@ -39,11 +39,11 @@ final class JwtHelperTest extends TestCase
         self::assertTrue(JwtHelper::isTokenExpired($token));
     }
 
-    public function testGetTokenExpiryReturnsMilliseconds(): void
+    public function testGetTokenExpiryReturnsSeconds(): void
     {
         $exp = time() + 1234;
         $token = JwtFactory::make(['exp' => $exp]);
-        self::assertSame($exp * 1000, JwtHelper::getTokenExpiry($token));
+        self::assertSame($exp, JwtHelper::getTokenExpiry($token));
     }
 
     public function testValidateClaimsHappyPath(): void

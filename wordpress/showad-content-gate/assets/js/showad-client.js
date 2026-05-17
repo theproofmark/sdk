@@ -127,11 +127,11 @@
     var verified = getCookie(cookieName('verified'));
     if (verified !== '1') return false;
 
-    // Also check expiry.
+    // Also check expiry (Unix seconds).
     var expiresStr = getCookie(cookieName('expires'));
     if (expiresStr) {
-      var expiresMs = parseInt(expiresStr, 10);
-      if (!isNaN(expiresMs) && Date.now() > expiresMs) {
+      var expiresSec = parseInt(expiresStr, 10);
+      if (!isNaN(expiresSec) && Math.floor(Date.now() / 1000) > expiresSec) {
         return false;
       }
     }
@@ -143,10 +143,10 @@
     var expiresStr = getCookie(cookieName('expires'));
     if (!expiresStr) return -1;
 
-    var expiresMs = parseInt(expiresStr, 10);
-    if (isNaN(expiresMs)) return -1;
+    var expiresSec = parseInt(expiresStr, 10);
+    if (isNaN(expiresSec)) return -1;
 
-    var remaining = Math.max(0, Math.floor((expiresMs - Date.now()) / 1000));
+    var remaining = Math.max(0, expiresSec - Math.floor(Date.now() / 1000));
     return remaining;
   }
 

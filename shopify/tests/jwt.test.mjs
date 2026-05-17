@@ -88,6 +88,6 @@ test('claim extraction helpers return expected fields', () => {
   assert.equal(getCreatorHashFromToken(token), 'c-x');
   assert.equal(getSessionHashFromToken(token), 's-y');
   assert.equal(getFingerprintFromToken(token), 'fp-z');
-  assert.equal(getTokenExpiry(token), 9999999999 * 1000);
+  assert.equal(getTokenExpiry(token), 9999999999);
   assert.ok(getTimeUntilExpiry(token) > 0);
 });

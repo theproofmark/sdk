@@ -122,7 +122,7 @@ class ShowAdFilterTest {
             new Cookie("showad_token", token),
             new Cookie("showad_creator", CREATOR_HASH),
             new Cookie("showad_verified", "1"),
-            new Cookie("showad_expires", "1800000000000")
+            new Cookie("showad_expires", "1800000000")
         );
         MockHttpServletResponse response = new MockHttpServletResponse();
         MockFilterChain chain = new MockFilterChain();
@@ -221,7 +221,7 @@ class ShowAdFilterTest {
             new Cookie("showad_token", token),
             new Cookie("showad_creator", CREATOR_HASH),
             new Cookie("showad_verified", "1"),
-            new Cookie("showad_expires", "1800000000000")
+            new Cookie("showad_expires", "1800000000")
         );
         MockHttpServletResponse response = new MockHttpServletResponse();
         MockFilterChain chain = new MockFilterChain();

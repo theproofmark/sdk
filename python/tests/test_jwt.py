@@ -39,10 +39,10 @@ def test_is_token_expired_false_when_valid():
     assert is_token_expired(token) is False
 
 
-def test_get_token_expiry_returns_milliseconds():
+def test_get_token_expiry_returns_seconds():
     exp = int(time.time()) + 60
     token = make_jwt({"creator_hash": "abc", "exp": exp})
-    assert get_token_expiry(token) == exp * 1000
+    assert get_token_expiry(token) == exp
 
 
 def test_validate_token_claims_creator_mismatch():
@@ -73,7 +73,15 @@ def test_validate_token_claims_happy_path():
     assert result.reason is None
 
 
-def test_validate_token_claims_no_iss_is_ok():
+def test_validate_token_claims_missing_iss_rejected_by_default():
+    """Strict-issuer mode is the default — tokens without `iss` are invalid."""
     token = make_valid_token("abc", iss=None)
     result = validate_token_claims(token, "abc")
+    assert result.valid is False
+    assert "issuer" in (result.reason or "").lower()
+
+
+def test_validate_token_claims_no_iss_allowed_when_require_issuer_false():
+    token = make_valid_token("abc", iss=None)
+    result = validate_token_claims(token, "abc", require_issuer=False)
     assert result.valid is True

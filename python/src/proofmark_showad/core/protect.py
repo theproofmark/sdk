@@ -206,11 +206,11 @@ def _handle_existing_token(
         return _redirect_to_video_ad(inp, debug, "invalid_token")
 
     debug.append("token:valid")
-    expiry_ms = get_token_expiry(token)
+    expiry = get_token_expiry(token)
     needs_refresh = (
         existing_verified != "1"
         or stored_creator != inp.config.creator_hash
-        or (expiry_ms is not None and existing_expires != str(expiry_ms))
+        or (expiry is not None and existing_expires != str(expiry))
     )
     if needs_refresh:
         secure = _resolve_secure(inp)
@@ -221,7 +221,7 @@ def _handle_existing_token(
                 token=token,
                 creator_hash=inp.config.creator_hash,
                 ticket_id=existing_ticket,
-                token_expiry_ms=expiry_ms,
+                token_expiry=expiry,
                 secure=secure,
             ),
             reason="token_valid",
@@ -264,11 +264,11 @@ async def _handle_existing_token_async(
         return _redirect_to_video_ad(inp, debug, "invalid_token")
 
     debug.append("token:valid")
-    expiry_ms = get_token_expiry(token)
+    expiry = get_token_expiry(token)
     needs_refresh = (
         existing_verified != "1"
         or stored_creator != inp.config.creator_hash
-        or (expiry_ms is not None and existing_expires != str(expiry_ms))
+        or (expiry is not None and existing_expires != str(expiry))
     )
     if needs_refresh:
         secure = _resolve_secure(inp)
@@ -279,7 +279,7 @@ async def _handle_existing_token_async(
                 token=token,
                 creator_hash=inp.config.creator_hash,
                 ticket_id=existing_ticket,
-                token_expiry_ms=expiry_ms,
+                token_expiry=expiry,
                 secure=secure,
             ),
             reason="token_valid",
@@ -313,7 +313,7 @@ def _handle_ticket_claim_success(
             token=token,
             creator_hash=str(claim.get("creator_hash", inp.config.creator_hash)),
             ticket_id=str(claim.get("ticket_id", redirect_ticket)),
-            token_expiry_ms=get_token_expiry(token),
+            token_expiry=get_token_expiry(token),
             secure=secure,
         ),
         reason="ticket_claimed",

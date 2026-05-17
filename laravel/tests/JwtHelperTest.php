@@ -72,7 +72,7 @@ class JwtHelperTest extends TestCase
         $exp = time() + 3600;
         $token = $this->makeToken(['exp' => $exp]);
 
-        $this->assertEquals($exp * 1000, JwtHelper::getTokenExpiry($token));
+        $this->assertEquals($exp, JwtHelper::getTokenExpiry($token));
     }
 
     public function testGetTokenExpiryNull()

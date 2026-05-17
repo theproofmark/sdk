@@ -58,8 +58,15 @@ export function canonicalQueryString(params: URLSearchParams): string {
 
 function constantTimeEqualHex(a: string, b: string): boolean {
   if (a.length !== b.length) return false;
+  // Compare hex strings as raw bytes (hex is ASCII; using 'hex' decoder
+  // ensures byte-by-byte timing-safe comparison of the decoded signatures).
   try {
-    return crypto.timingSafeEqual(Buffer.from(a, 'utf-8'), Buffer.from(b, 'utf-8'));
+    const aBytes = Buffer.from(a, 'hex');
+    const bBytes = Buffer.from(b, 'hex');
+    if (aBytes.length !== bBytes.length || aBytes.length === 0) {
+      return false;
+    }
+    return crypto.timingSafeEqual(aBytes, bBytes);
   } catch {
     return false;
   }

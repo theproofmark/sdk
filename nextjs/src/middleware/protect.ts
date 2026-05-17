@@ -341,29 +341,34 @@ function isPathProtected(pathname: string, patterns: string[]): boolean {
 }
 
 /**
- * Check if pathname matches any excluded patterns
+ * Check if pathname matches any excluded patterns.
  */
-function isPathExcluded(pathname: string, patterns: string[]): boolean {
+function isPathExcluded(pathname: string, patterns: string[] = []): boolean {
+  if (patterns.length === 0) {
+    return false;
+  }
   return patterns.some(pattern => matchPath(pathname, pattern));
 }
 
 /**
- * Simple glob pattern matching (supports * wildcard)
+ * Simple glob pattern matching (supports * wildcard).
+ * Escapes regex metacharacters BEFORE expanding the wildcard so patterns
+ * containing `.`, `+`, `?`, `(`, `[`, etc. match literally.
  */
+const PATH_REGEX_SPECIAL = /[.+?^${}()|[\]\\]/g;
+
 function matchPath(pathname: string, pattern: string): boolean {
   if (pattern === pathname) {
     return true;
   }
 
-  if (pattern.includes('*')) {
-    const regexPattern = pattern
-      .replace(/\*/g, '.*')
-      .replace(/\//g, '\\/');
-    const regex = new RegExp(`^${regexPattern}$`);
-    return regex.test(pathname);
+  if (!pattern.includes('*')) {
+    return false;
   }
 
-  return false;
+  const escaped = pattern.replace(PATH_REGEX_SPECIAL, '\\$&').replace(/\*/g, '.*');
+  const regex = new RegExp(`^${escaped}$`);
+  return regex.test(pathname);
 }
 
 /**
