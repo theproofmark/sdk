@@ -1,0 +1,23 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <!-- Point the widget at a local backend for dev. Omit in production. -->
+    <meta name="pmv-api-base" content="http://localhost:8080" />
+    <title>ProofMark Verify — vanilla example</title>
+  </head>
+  <body>
+    <h1>Sign in</h1>
+    <form action="/login" method="POST">
+      <label>Email <input type="email" name="email" required /></label>
+      <!-- The widget injects a hidden input named pm-verify-response into this form. -->
+      <div class="pm-verify" data-sitekey="pmv_test_demo" data-action="login"></div>
+      <button type="submit">Sign in</button>
+    </form>
+
+    <!-- In production, load from the CDN: https://verify.proofmark.com/api.js -->
+    <!-- For local dev against the built core, serve packages/core/dist/api.js: -->
+    <script src="../../packages/core/dist/api.js" async defer></script>
+  </body>
+</html>
