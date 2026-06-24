@@ -54,6 +54,8 @@ const pmverify: PmVerifyGlobal = {
   getResponse(id) { const w = widgets[id]; return w ? getToken(w) : ''; },
   reset(id) {
     const w = widgets[id]; if (!w) return;
+    // Clear the success-expiry timer. (The original api.js used an anonymous
+    // setTimeout here and never cleared it — a latent timer leak this fixes.)
     if (w.expiryTimer) { clearTimeout(w.expiryTimer); w.expiryTimer = null; }
     w.token = ''; w.state = 'idle'; renderCheckbox(w); removeHiddenInput(w);
   },
@@ -100,7 +102,11 @@ function autoRenderAll(): void {
         'expired-callback': node.getAttribute('data-expired-callback') || undefined,
       });
       node.setAttribute('data-pmv-rendered', '1');
-    } catch { /* ignore */ }
+    } catch (e) {
+      if (typeof console !== 'undefined' && console.warn) {
+        console.warn('[pmverify] auto-render failed:', e);
+      }
+    }
   });
 }
 

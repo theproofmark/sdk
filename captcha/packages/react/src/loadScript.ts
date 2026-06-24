@@ -20,7 +20,10 @@ export function loadVerifyScript(scriptBaseUrl?: string): Promise<void> {
     }
     el.addEventListener('load', () => resolve());
     el.addEventListener('error', () => { loaders.delete(src); reject(new Error('failed to load api.js')); });
-    if (window.pmverify) resolve();
+    // If the script was already present and finished loading before our
+    // listeners attached, the 'load' event won't fire again — re-check on a
+    // microtask so we still resolve.
+    Promise.resolve().then(() => { if (window.pmverify) resolve(); });
   });
   loaders.set(src, p);
   return p;
