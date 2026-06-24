@@ -105,15 +105,21 @@ function autoRenderAll(): void {
 }
 
 // Side-effect install (this is what the IIFE bundle runs).
-if (unsupported()) {
-  installNoOp();
-} else {
-  (window as unknown as { pmverify: PmVerifyGlobal }).pmverify = pmverify;
-  setRegistry(widgets);
-  installMessageListener(() => widgets, transitions);
-  if (document.readyState === 'loading') {
-    document.addEventListener('DOMContentLoaded', autoRenderAll);
+// When there is no DOM at all (e.g. Node unit tests importing only the
+// re-exported pure helpers), install nothing and bail — this mirrors the
+// original api.js `if (!global.document) return;` early exit. The no-op
+// API is installed only when a DOM exists but lacks required features.
+if (typeof window !== 'undefined' && window.document) {
+  if (unsupported()) {
+    installNoOp();
   } else {
-    autoRenderAll();
+    (window as unknown as { pmverify: PmVerifyGlobal }).pmverify = pmverify;
+    setRegistry(widgets);
+    installMessageListener(() => widgets, transitions);
+    if (document.readyState === 'loading') {
+      document.addEventListener('DOMContentLoaded', autoRenderAll);
+    } else {
+      autoRenderAll();
+    }
   }
 }

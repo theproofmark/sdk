@@ -23,7 +23,9 @@ export function appendQueryParam(url: string, key: string, value: string): strin
 export function originOf(url: string | null): string | null {
   if (!url) return null;
   try {
-    const base = typeof window !== 'undefined' ? window.location.href : 'http://localhost';
+    // In a browser, resolve relative URLs against the current page.
+    // In Node (tests), only accept absolute URLs.
+    const base = typeof window !== 'undefined' && window.location ? window.location.href : undefined;
     return new URL(url, base).origin;
   } catch {
     return null;

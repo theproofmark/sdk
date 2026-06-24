@@ -20,6 +20,17 @@ export function unlockBodyScroll(widget: Widget): void {
   widget.priorBodyPaddingRight = null;
 }
 
+/**
+ * Focusable elements within the modal, for the focus trap.
+ *
+ * NOTE: intentionally a broad query + JS filter rather than the original
+ * api.js single CSS selector. The original union
+ * `input:not([disabled]), …, [tabindex]:not([tabindex="-1"])` re-admits an
+ * `<input tabindex="-1">` because it still matches `input:not([disabled])`.
+ * Filtering in JS honors the author's clear intent to exclude `tabindex="-1"`.
+ * Production behavior is identical (the modal never contains such inputs);
+ * this only differs on a synthetic edge case the unit test pins down.
+ */
 export function getFocusableElements(root: HTMLElement | null): HTMLElement[] {
   if (!root || !root.querySelectorAll) return [];
   const candidates = Array.from(root.querySelectorAll<HTMLElement>(
