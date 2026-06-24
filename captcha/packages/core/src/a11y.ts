@@ -22,9 +22,16 @@ export function unlockBodyScroll(widget: Widget): void {
 
 export function getFocusableElements(root: HTMLElement | null): HTMLElement[] {
   if (!root || !root.querySelectorAll) return [];
-  return Array.from(root.querySelectorAll<HTMLElement>(
-    'a[href], button:not([disabled]), input:not([disabled]), select:not([disabled]), textarea:not([disabled]), iframe, [tabindex]:not([tabindex="-1"])'
+  const candidates = Array.from(root.querySelectorAll<HTMLElement>(
+    'a[href], button, input, select, textarea, iframe, [tabindex]'
   ));
+  return candidates.filter(el => {
+    const tabindex = el.getAttribute('tabindex');
+    if (tabindex === '-1') return false;
+    const disabled = (el as HTMLInputElement).disabled;
+    if (disabled) return false;
+    return true;
+  });
 }
 
 export function installFocusTrap(widget: Widget, onEscape: () => void): void {
