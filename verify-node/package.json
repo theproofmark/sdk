@@ -15,7 +15,8 @@
       "types": "./dist/middleware.d.ts",
       "import": "./dist/middleware.mjs",
       "require": "./dist/middleware.js"
-    }
+    },
+    "./package.json": "./package.json"
   },
   "files": [
     "dist",
