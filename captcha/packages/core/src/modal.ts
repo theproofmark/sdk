@@ -33,7 +33,11 @@ export function showModal(widget: Widget, embedURL: string, apiBase: string, h: 
 
   const frame = document.createElement('iframe');
   frame.src = srcWithOrigin;
-  frame.allow = 'autoplay; encrypted-media';
+  // autoplay + encrypted-media: the challenge plays a short muted ad clip.
+  // clipboard-write: lets the embedded document (and dev tooling running inside
+  // it) use the async Clipboard API; without it, navigator.clipboard.writeText
+  // throws NotAllowedError under the parent's permissions policy.
+  frame.allow = 'autoplay; encrypted-media; clipboard-write';
   frame.setAttribute('title', 'ProofMark Verify');
   frame.setAttribute(
     'sandbox',

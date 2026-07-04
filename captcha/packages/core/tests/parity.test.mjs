@@ -1,5 +1,6 @@
 import assert from 'node:assert/strict';
 import { test, before, beforeEach, afterEach } from 'node:test';
+import { waitFor } from './helpers.mjs';
 
 before(async () => {
   const { GlobalRegistrator } = await import('@happy-dom/global-registrator');
@@ -33,7 +34,7 @@ test('success sets a hidden pm-verify-response input inside the enclosing form',
   form.appendChild(div); document.body.appendChild(form);
   window.pmverify.render(div, { sitekey: 'pmv_test_x' });
   div.querySelector('[role="button"]').click();
-  await new Promise((r) => setTimeout(r, 10));
+  await waitFor(() => form.querySelector('input[name="pm-verify-response"]') !== null);
   const hidden = form.querySelector('input[name="pm-verify-response"]');
   assert.ok(hidden, 'hidden input present');
   assert.equal(hidden.value, 'TKN');
@@ -47,7 +48,7 @@ test('reset clears token and removes the hidden input', async () => {
   form.appendChild(div); document.body.appendChild(form);
   const id = window.pmverify.render(div, { sitekey: 'pmv_test_x' });
   div.querySelector('[role="button"]').click();
-  await new Promise((r) => setTimeout(r, 10));
+  await waitFor(() => form.querySelector('input[name="pm-verify-response"]') !== null);
   window.pmverify.reset(id);
   assert.equal(window.pmverify.getResponse(id), '');
   assert.equal(form.querySelector('input[name="pm-verify-response"]'), null);
@@ -61,9 +62,9 @@ test('opening a second widget supersedes the first widget modal', async () => {
   window.pmverify.render(d1, { sitekey: 'x' });
   window.pmverify.render(d2, { sitekey: 'x' });
   d1.querySelector('[role="button"]').click();
-  await new Promise((r) => setTimeout(r, 10));
+  await waitFor(() => document.querySelector('iframe') !== null);
   d2.querySelector('[role="button"]').click();
-  await new Promise((r) => setTimeout(r, 10));
+  await waitFor(() => document.querySelectorAll('[role="dialog"]').length <= 1, { timeoutMs: 500 });
   // Only one modal overlay should exist at a time.
   const modals = document.querySelectorAll('[role="dialog"]');
   assert.ok(modals.length <= 1, `expected <=1 modal, got ${modals.length}`);

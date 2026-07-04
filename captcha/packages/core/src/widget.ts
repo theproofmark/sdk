@@ -5,7 +5,10 @@ import { resolveLocale, isRTL, strings } from './i18n';
 import { resolveCallback, escapeHtml } from './utils';
 import { resolveTheme, checkboxStyles, checkmarkStyles } from './styles';
 import { showModal, tearDownModal, type ModalHandlers } from './modal';
-import type { Widget, RenderOptions, ChallengeResponse } from './types';
+import { getWidgetFingerprint } from './fingerprint';
+import { collectTrafficIntegritySignals } from './traffic-integrity';
+import { encryptEnvelope } from './encryption';
+import type { Widget, RenderOptions, ChallengeResponse, LockoutInfo } from './types';
 
 /** Build a widget record and render its idle checkbox. Ported from api.js createWidget (437-484). */
 export function createWidget(id: number, container: HTMLElement, options: RenderOptions): Widget {
@@ -37,10 +40,12 @@ export function createWidget(id: number, container: HTMLElement, options: Render
     embedURL: null,
     iframeReadyTimer: null,
     expiryTimer: null,
+    lockoutTimer: null,
     callbacks: {
       success: resolveCallback(options.callback),
       error: resolveCallback(options['error-callback'] || options.errorCallback),
       expired: resolveCallback(options['expired-callback'] || options.expiredCallback),
+      lockout: resolveCallback(options['lockout-callback'] || options.lockoutCallback),
     },
   };
 
@@ -112,16 +117,55 @@ export function openModal(widget: Widget, all: (Widget | null)[]): void {
   widget.state = 'requesting';
   const apiBase = resolveApiBase();
 
+  void requestChallenge(widget, apiBase);
+}
+
+/**
+ * Collects the widget-side fingerprint + traffic-integrity signals, best-
+ * effort encrypts the request body (AES-256-GCM + RSA-OAEP, matching the Go
+ * backend's envelope format), and POSTs /v1/verify/challenge. Every signal-
+ * collection step degrades gracefully — a fingerprint failure or missing
+ * public key never blocks the user-facing flow, it just means the request
+ * carries less signal (or goes over plaintext instead of encrypted).
+ */
+async function requestChallenge(widget: Widget, apiBase: string): Promise<void> {
+  const [fingerprint, trafficIntegrity] = await Promise.all([
+    getWidgetFingerprint().catch(() => ''),
+    Promise.resolve().then(() => collectTrafficIntegritySignals()).catch(() => ({})),
+  ]);
+
+  const body: Record<string, unknown> = {
+    sitekey: widget.sitekey,
+    hostname: window.location.host,
+    action: widget.action,
+  };
+  if (fingerprint) body.fingerprint = fingerprint;
+  if (trafficIntegrity && Object.keys(trafficIntegrity).length > 0) body.traffic_integrity = trafficIntegrity;
+
+  const envelope = await encryptEnvelope(apiBase, body).catch(() => null);
+  const headers: Record<string, string> = { 'Content-Type': 'application/json' };
+  const requestBody = envelope ? JSON.stringify(envelope) : JSON.stringify(body);
+  if (envelope) headers['X-Encrypted-Payload'] = '1';
+
   fetch(apiBase + '/v1/verify/challenge', {
     method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({ sitekey: widget.sitekey, hostname: window.location.host, action: widget.action }),
+    headers,
+    body: requestBody,
   })
     .then((r) => r.json().then((b: ChallengeResponse) => ({ ok: r.ok, body: b })))
     .then((res) => {
       if (!res.ok) {
         const codes = res.body['error-codes'];
-        fail(widget, (codes && codes[0]) || 'request-failed');
+        const code = (codes && codes[0]) || 'request-failed';
+        if (code === 'locked-out') {
+          lockout(widget, {
+            code,
+            tier: res.body.lockout_tier,
+            retryAfterSec: res.body.retry_after_sec,
+          });
+          return;
+        }
+        fail(widget, code);
         return;
       }
       widget.challengeId = res.body.challenge_id || null;
@@ -177,6 +221,44 @@ export function fail(widget: Widget, code: string): void {
   if (widget.callbacks.error) widget.callbacks.error(code);
 }
 
+/**
+ * Penalty lockout (Phase 7) — distinct from fail(): renders a non-
+ * interactive locked checkbox instead of restoring the clickable one, so
+ * the visitor can't just immediately retry and re-trigger the same
+ * penalty escalation. Fires the dedicated lockout-callback when set,
+ * falling back to error-callback('locked-out') so existing integrations
+ * that only wired error-callback still learn about it (additive-only).
+ *
+ * If the server reported a retry-after duration, schedules a return to
+ * the normal checkbox once it elapses (capped at 30 min client-side —
+ * beyond that we'd rather the visitor reload the page than keep a timer
+ * alive in a backgrounded tab). With no duration, the widget stays locked
+ * until the host page reloads.
+ */
+export function lockout(widget: Widget, info: LockoutInfo): void {
+  widget.state = 'locked';
+  tearDownModal(widget);
+  renderLockedUI(widget);
+  if (widget.lockoutTimer) {
+    clearTimeout(widget.lockoutTimer);
+    widget.lockoutTimer = null;
+  }
+  if (widget.callbacks.lockout) {
+    widget.callbacks.lockout(info);
+  } else if (widget.callbacks.error) {
+    widget.callbacks.error(info.code);
+  }
+  if (typeof info.retryAfterSec === 'number' && info.retryAfterSec > 0) {
+    const delayMs = Math.min(info.retryAfterSec, 30 * 60) * 1000;
+    widget.lockoutTimer = setTimeout(() => {
+      if (widget.state === 'locked') {
+        widget.state = 'idle';
+        renderCheckbox(widget);
+      }
+    }, delayMs);
+  }
+}
+
 /** Render the verified state. Ported from api.js renderSuccessUI (911-947). */
 export function renderSuccessUI(widget: Widget): void {
   const c = widget.container;
@@ -204,6 +286,39 @@ export function renderSuccessUI(widget: Widget): void {
     '<div style="font-size:14px;color:' + textColor + ';">' + escapeHtml(str.verified) + '</div>' +
     '<div style="font-size:11px;color:#047857;margin-top:2px;">' + escapeHtml(str.brand) + '</div>';
   inner.appendChild(tick);
+  inner.appendChild(label);
+  box.appendChild(inner);
+  c.appendChild(box);
+}
+
+/** Render the locked-out state — a non-interactive, muted-amber checkbox slot. */
+export function renderLockedUI(widget: Widget): void {
+  const c = widget.container;
+  const str = strings(widget.locale);
+  c.innerHTML = '';
+  c.setAttribute('dir', widget.rtl ? 'rtl' : 'ltr');
+  c.setAttribute('lang', widget.locale);
+  const box = document.createElement('div');
+  box.style.cssText = checkboxStyles(widget.theme);
+  box.style.cursor = 'not-allowed';
+  box.style.borderColor = '#b45309';
+  box.setAttribute('aria-disabled', 'true');
+  const inner = document.createElement('div');
+  inner.style.cssText = 'display:flex;align-items:center;gap:12px;';
+  const lockIcon = document.createElement('div');
+  lockIcon.style.cssText = [
+    'width:24px', 'height:24px', 'border-radius:3px', 'background:#b45309',
+    'color:#fff', 'display:flex', 'align-items:center', 'justify-content:center',
+    'font-size:13px', 'flex-shrink:0',
+  ].join(';');
+  lockIcon.textContent = '\u{1F512}'; // lock emoji, avoids a source-file non-ASCII literal
+  const label = document.createElement('div');
+  label.style.cssText = 'flex:1;text-align:start;';
+  const textColor = widget.theme === 'dark' ? '#f3f4f6' : '#111827';
+  label.innerHTML =
+    '<div style="font-size:14px;color:' + textColor + ';">' + escapeHtml(str.locked_out) + '</div>' +
+    '<div style="font-size:11px;color:#b45309;margin-top:2px;">' + escapeHtml(str.brand) + '</div>';
+  inner.appendChild(lockIcon);
   inner.appendChild(label);
   box.appendChild(inner);
   c.appendChild(box);

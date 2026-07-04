@@ -46,8 +46,14 @@ export function iframeStyles(): string {
     return ['width:100%','height:100%','max-width:none','background:#fff',
       'border:none','border-radius:0','box-shadow:none'].join(';');
   }
-  return ['width:100%','max-width:520px','height:520px','background:#fff',
-    'border:none','border-radius:12px','box-shadow:0 20px 50px rgba(0,0,0,.3)'].join(';');
+  // Large, viewport-responsive lightbox. Caps at a comfortable desktop size
+  // but scales down with the viewport (94vw / 92vh) so it never overflows on
+  // small laptops. The hosted page lays the 16:9 ad across the full width and
+  // the question/answer stage below, so a wider card gives the ad real estate
+  // instead of the old cramped 520x520 square.
+  return ['width:min(960px,94vw)','height:min(720px,92vh)','max-width:94vw',
+    'background:#fff','border:none','border-radius:16px',
+    'box-shadow:0 24px 60px rgba(0,0,0,.35)'].join(';');
 }
 
 /** Modal overlay container. Ported from api.js showModal (657-667). */

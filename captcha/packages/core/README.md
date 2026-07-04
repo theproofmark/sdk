@@ -51,6 +51,7 @@ When the user completes the challenge, the widget injects a hidden form input na
 | `data-callback` | string | Global function name to call on success |
 | `data-error-callback` | string | Global function name to call on error |
 | `data-expired-callback` | string | Global function name to call on expiry |
+| `data-lockout-callback` | string | Global function name to call on a penalty lockout (see [Security model](#security-model)) |
 
 ### Explicit render
 
@@ -73,12 +74,18 @@ Load the script with `?render=explicit` and call `render()` manually:
     console.log('Error:', errorCode);
   }
 
+  function onVerifyLockout(info) {
+    // info: { code: 'locked-out', tier: 'minor'|'moderate'|'severe', retryAfterSec: number }
+    console.log('Locked out, retry after', info.retryAfterSec, 'seconds');
+  }
+
   // Call this when your page is ready
   window.pmverify.render('my-widget', {
     sitekey: 'pmv_live_xxxxxxxx',
     callback: onVerifySuccess,
     'expired-callback': onVerifyExpired,
     'error-callback': onVerifyError,
+    'lockout-callback': onVerifyLockout,
     theme: 'light',
     action: 'contact_form'
   });
@@ -104,6 +111,7 @@ Renders a widget into a DOM element. Returns a numeric widget ID.
 | `callback` | function(token) | no | Called on successful completion with the token |
 | `'expired-callback'` | function() | no | Called when the token expires (~270s after success) |
 | `'error-callback'` | function(code) | no | Called if the widget encounters an error |
+| `'lockout-callback'` | function({code, tier, retryAfterSec}) | no | Called when the server applies a penalty lockout (see [Security model](#security-model)). Falls back to `'error-callback'` with code `'locked-out'` if not set |
 | `theme` | string | no | `'light'`, `'dark'`, or `'auto'` (default: `'auto'`) |
 | `action` | string | no | Action label sent with the verification |
 | `lang` | string | no | Locale code (e.g., `'en'`, `'es'`, `'fr'`) |
@@ -142,6 +150,35 @@ Default is `https://api.proofmark.com`. Useful for local development or self-hos
 ## Theme
 
 When `theme` is set to `'auto'` (the default), the widget respects the user's `prefers-color-scheme` system preference. Choose `'light'` or `'dark'` to override.
+
+## Security model
+
+The widget does more than render a checkbox — every challenge request carries anti-fraud
+signal, and the transport is encrypted end-to-end:
+
+- **Device fingerprint** — a lightweight composite fingerprint (persisted device ID +
+  browser-signal hash, no external dependency) is sent with the initial
+  `POST /v1/verify/challenge` call. A second, richer fingerprint is collected inside
+  the challenge iframe (`verify.proofmark.com`) and cross-checked against the widget's —
+  a mismatch (e.g. someone opening the iframe directly, bypassing your site) is a strong
+  fraud signal.
+- **Traffic-integrity signals** — WebGL vendor/renderer, screen resolution, timezone, and
+  language are collected to catch headless/automation browsers (e.g. SwiftShader or
+  llvmpipe software rendering).
+- **Encrypted transport** — the challenge request body is encrypted (AES-256-GCM +
+  RSA-OAEP) using a public key fetched from `/v1/verify/security/public-key` (cached
+  ~5 minutes), so signals aren't visible to network intermediaries.
+- **Penalty escalation** — repeated failures or fraud signals from the same
+  fingerprint+IP escalate through minor → moderate → severe lockout tiers. When locked
+  out, the server returns `error-codes: ['locked-out']` with a `retry_after_sec` and
+  `lockout_tier`; the widget renders a disabled, non-interactive checkbox and fires
+  `'lockout-callback'` (or `'error-callback'` if you haven't set one) instead of letting
+  the user retry indefinitely. The widget automatically re-enables itself once
+  `retryAfterSec` elapses.
+
+None of this requires any integration changes beyond optionally handling
+`'lockout-callback'` — fingerprinting, encryption, and signing happen transparently
+inside the widget and the challenge iframe.
 
 ## Server-side verification
 

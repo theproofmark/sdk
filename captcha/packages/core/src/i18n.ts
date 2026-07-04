@@ -7,6 +7,8 @@ export interface ChromeStrings {
   popup_button: string;
   aria_label: string;
   aria_close: string;
+  /** Shown in the checkbox slot during a penalty lockout (Phase 7). */
+  locked_out: string;
 }
 
 export const SUPPORTED_LOCALES = [
@@ -50,6 +52,7 @@ export const STRINGS: Record<string, ChromeStrings> = {
     popup_button: 'Open verification window',
     aria_label: 'I am not a robot. ProofMark Verify human verification.',
     aria_close: 'Close verification',
+    locked_out: 'Verification temporarily locked. Try again later.',
   },
   es: {
     checkbox_label: 'No soy un robot',
@@ -60,6 +63,7 @@ export const STRINGS: Record<string, ChromeStrings> = {
     popup_button: 'Abrir ventana de verificación',
     aria_label: 'No soy un robot. Verificación humana de ProofMark Verify.',
     aria_close: 'Cerrar verificación',
+    locked_out: 'Verificación bloqueada temporalmente. Inténtalo más tarde.',
   },
   fr: {
     checkbox_label: 'Je ne suis pas un robot',
@@ -70,6 +74,7 @@ export const STRINGS: Record<string, ChromeStrings> = {
     popup_button: 'Ouvrir la fenêtre de vérification',
     aria_label: 'Je ne suis pas un robot. Vérification humaine ProofMark Verify.',
     aria_close: 'Fermer la vérification',
+    locked_out: 'Vérification temporairement verrouillée. Réessayez plus tard.',
   },
   de: {
     checkbox_label: 'Ich bin kein Roboter',
@@ -80,6 +85,7 @@ export const STRINGS: Record<string, ChromeStrings> = {
     popup_button: 'Verifizierungsfenster öffnen',
     aria_label: 'Ich bin kein Roboter. ProofMark Verify Mensch-Prüfung.',
     aria_close: 'Verifizierung schließen',
+    locked_out: 'Verifizierung vorübergehend gesperrt. Später erneut versuchen.',
   },
   pt: {
     checkbox_label: 'Não sou um robô',
@@ -90,6 +96,7 @@ export const STRINGS: Record<string, ChromeStrings> = {
     popup_button: 'Abrir janela de verificação',
     aria_label: 'Não sou um robô. Verificação humana ProofMark Verify.',
     aria_close: 'Fechar verificação',
+    locked_out: 'Verificação temporariamente bloqueada. Tente novamente mais tarde.',
   },
   it: {
     checkbox_label: 'Non sono un robot',
@@ -100,6 +107,7 @@ export const STRINGS: Record<string, ChromeStrings> = {
     popup_button: 'Apri finestra di verifica',
     aria_label: 'Non sono un robot. Verifica umana ProofMark Verify.',
     aria_close: 'Chiudi verifica',
+    locked_out: 'Verifica temporaneamente bloccata. Riprova più tardi.',
   },
   nl: {
     checkbox_label: 'Ik ben geen robot',
@@ -110,6 +118,7 @@ export const STRINGS: Record<string, ChromeStrings> = {
     popup_button: 'Verificatievenster openen',
     aria_label: 'Ik ben geen robot. Menselijke verificatie van ProofMark Verify.',
     aria_close: 'Verificatie sluiten',
+    locked_out: 'Verificatie tijdelijk vergrendeld. Probeer het later opnieuw.',
   },
   ja: {
     checkbox_label: '私はロボットではありません',
@@ -120,6 +129,7 @@ export const STRINGS: Record<string, ChromeStrings> = {
     popup_button: '確認ウィンドウを開く',
     aria_label: '私はロボットではありません。ProofMark Verify による人間確認。',
     aria_close: '確認を閉じる',
+    locked_out: '確認は一時的にロックされています。しばらくしてから再度お試しください。',
   },
   ko: {
     checkbox_label: '저는 로봇이 아닙니다',
@@ -130,6 +140,7 @@ export const STRINGS: Record<string, ChromeStrings> = {
     popup_button: '확인 창 열기',
     aria_label: '저는 로봇이 아닙니다. ProofMark Verify 인간 확인.',
     aria_close: '확인 닫기',
+    locked_out: '확인이 일시적으로 잠겼습니다. 나중에 다시 시도하세요.',
   },
   'zh-CN': {
     checkbox_label: '我不是机器人',
@@ -140,6 +151,7 @@ export const STRINGS: Record<string, ChromeStrings> = {
     popup_button: '打开验证窗口',
     aria_label: '我不是机器人。ProofMark Verify 真人验证。',
     aria_close: '关闭验证',
+    locked_out: '验证已暂时锁定,请稍后再试。',
   },
   'zh-TW': {
     checkbox_label: '我不是機器人',
@@ -150,6 +162,7 @@ export const STRINGS: Record<string, ChromeStrings> = {
     popup_button: '開啟驗證視窗',
     aria_label: '我不是機器人。ProofMark Verify 真人驗證。',
     aria_close: '關閉驗證',
+    locked_out: '驗證已暫時鎖定,請稍後再試。',
   },
   ar: {
     checkbox_label: 'أنا لست برنامج روبوت',
@@ -160,6 +173,7 @@ export const STRINGS: Record<string, ChromeStrings> = {
     popup_button: 'فتح نافذة التحقق',
     aria_label: 'أنا لست برنامج روبوت. التحقق البشري بواسطة ProofMark Verify.',
     aria_close: 'إغلاق التحقق',
+    locked_out: 'تم قفل التحقق مؤقتًا. حاول مرة أخرى لاحقًا.',
   },
   he: {
     checkbox_label: 'אני לא רובוט',
@@ -170,6 +184,7 @@ export const STRINGS: Record<string, ChromeStrings> = {
     popup_button: 'פתח חלון אימות',
     aria_label: 'אני לא רובוט. אימות אנושי של ProofMark Verify.',
     aria_close: 'סגור אימות',
+    locked_out: 'האימות נעול באופן זמני. נסה שוב מאוחר יותר.',
   },
   fa: {
     checkbox_label: 'من ربات نیستم',
@@ -180,6 +195,7 @@ export const STRINGS: Record<string, ChromeStrings> = {
     popup_button: 'باز کردن پنجره تأیید',
     aria_label: 'من ربات نیستم. تأیید انسانی ProofMark Verify.',
     aria_close: 'بستن تأیید',
+    locked_out: 'تأیید به‌طور موقت قفل شده است. بعداً دوباره تلاش کنید.',
   },
   ru: {
     checkbox_label: 'Я не робот',
@@ -190,6 +206,7 @@ export const STRINGS: Record<string, ChromeStrings> = {
     popup_button: 'Открыть окно проверки',
     aria_label: 'Я не робот. Проверка человека ProofMark Verify.',
     aria_close: 'Закрыть проверку',
+    locked_out: 'Проверка временно заблокирована. Повторите попытку позже.',
   },
   hi: {
     checkbox_label: 'मैं रोबोट नहीं हूँ',
@@ -200,6 +217,7 @@ export const STRINGS: Record<string, ChromeStrings> = {
     popup_button: 'सत्यापन विंडो खोलें',
     aria_label: 'मैं रोबोट नहीं हूँ। ProofMark Verify द्वारा मानव सत्यापन।',
     aria_close: 'सत्यापन बंद करें',
+    locked_out: 'सत्यापन अस्थायी रूप से लॉक है। कृपया बाद में पुनः प्रयास करें।',
   },
   tr: {
     checkbox_label: 'Ben robot değilim',
@@ -210,6 +228,7 @@ export const STRINGS: Record<string, ChromeStrings> = {
     popup_button: 'Doğrulama penceresini aç',
     aria_label: 'Ben robot değilim. ProofMark Verify insan doğrulaması.',
     aria_close: 'Doğrulamayı kapat',
+    locked_out: 'Doğrulama geçici olarak kilitlendi. Daha sonra tekrar deneyin.',
   },
   pl: {
     checkbox_label: 'Nie jestem robotem',
@@ -220,6 +239,7 @@ export const STRINGS: Record<string, ChromeStrings> = {
     popup_button: 'Otwórz okno weryfikacji',
     aria_label: 'Nie jestem robotem. Weryfikacja człowieka ProofMark Verify.',
     aria_close: 'Zamknij weryfikację',
+    locked_out: 'Weryfikacja tymczasowo zablokowana. Spróbuj później.',
   },
 };
 

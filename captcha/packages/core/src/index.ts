@@ -12,7 +12,7 @@ export { resolveLocale, isRTL, strings, STRINGS, SUPPORTED_LOCALES } from './i18
 export { lockBodyScroll, unlockBodyScroll, getFocusableElements } from './a11y';
 export { installMessageListener } from './messaging';
 export { resolveTheme } from './styles';
-export type { RenderOptions, PmVerifyGlobal } from './types';
+export type { RenderOptions, PmVerifyGlobal, LockoutInfo } from './types';
 
 const widgets: (Widget | null)[] = [];
 let nextWidgetId = 0;
@@ -57,11 +57,13 @@ const pmverify: PmVerifyGlobal = {
     // Clear the success-expiry timer. (The original api.js used an anonymous
     // setTimeout here and never cleared it — a latent timer leak this fixes.)
     if (w.expiryTimer) { clearTimeout(w.expiryTimer); w.expiryTimer = null; }
+    if (w.lockoutTimer) { clearTimeout(w.lockoutTimer); w.lockoutTimer = null; }
     w.token = ''; w.state = 'idle'; renderCheckbox(w); removeHiddenInput(w);
   },
   remove(id) {
     const w = widgets[id]; if (!w) return;
     if (w.expiryTimer) { clearTimeout(w.expiryTimer); w.expiryTimer = null; }
+    if (w.lockoutTimer) { clearTimeout(w.lockoutTimer); w.lockoutTimer = null; }
     tearDownModal(w); removeHiddenInput(w);
     while (w.container.firstChild) w.container.removeChild(w.container.firstChild);
     widgets[id] = null;
@@ -100,6 +102,7 @@ function autoRenderAll(): void {
         callback: node.getAttribute('data-callback') || undefined,
         'error-callback': node.getAttribute('data-error-callback') || undefined,
         'expired-callback': node.getAttribute('data-expired-callback') || undefined,
+        'lockout-callback': node.getAttribute('data-lockout-callback') || undefined,
       });
       node.setAttribute('data-pmv-rendered', '1');
     } catch (e) {

@@ -78,6 +78,7 @@ export function SignupForm() {
 | `onToken` | (token: string) => void | yes | Called when the user completes the challenge |
 | `onExpire` | () => void | no | Called when the token expires (~270s after success) |
 | `onError` | (code: string) => void | no | Called on error |
+| `onLockout` | (info: LockoutInfo) => void | no | Called when the server applies a penalty lockout (see [Security model](#security-model)). Falls back to `onError('locked-out')` if not set |
 | `theme` | `'light'` \| `'dark'` \| `'auto'` | no | Default: `'auto'` |
 | `action` | string | no | Action label sent with verification |
 | `lang` | string | no | Locale code (e.g., `'en'`, `'es'`, `'fr'`) |
@@ -127,6 +128,30 @@ export function MyForm() {
   );
 }
 ```
+
+### `LockoutInfo`
+
+```ts
+interface LockoutInfo {
+  code: string; // 'locked-out'
+  tier?: 'minor' | 'moderate' | 'severe';
+  retryAfterSec?: number;
+}
+```
+
+```tsx
+<ProofMarkVerify
+  siteKey="pmv_live_xxxxxxxx"
+  onToken={setToken}
+  onLockout={(info) => {
+    setLockoutMessage(`Too many attempts, try again in ${info.retryAfterSec}s`);
+  }}
+/>
+```
+
+The widget itself renders a disabled state and re-enables automatically once
+`retryAfterSec` elapses — `onLockout` is for surfacing a message in your own UI (e.g.
+disabling the submit button, showing a toast), not for resetting the widget.
 
 ## Hook API
 
@@ -202,6 +227,15 @@ This overrides the default `https://verify.proofmark.com` and is useful for test
 - **Single-use:** Each token can only be verified once server-side.
 - **Short-lived:** Tokens expire automatically ~270 seconds after successful completion. Call `onExpire` when this happens.
 - **Reset on error:** After a failed server-side verification, call the ref's `reset()` method to clear the token and let the user try again.
+
+## Security model
+
+Every challenge is protected by the same signal collection and encrypted transport used
+by the core widget (fingerprinting, traffic-integrity signals, AES/RSA-encrypted
+requests, and per-challenge ECDSA-signed submissions from the challenge iframe) plus
+server-side penalty escalation and frequency capping. This all happens transparently —
+the only integration surface is the optional `onLockout` prop above. See the
+[`@proofmark/verify-js` security model](../core/README.md#security-model) for details.
 
 ## Server-side verification
 

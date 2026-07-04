@@ -22,6 +22,7 @@ export function useProofMarkVerify(scriptBaseUrl?: string) {
       callback: (t) => args.onToken(t),
       'expired-callback': () => args.onExpire?.(),
       'error-callback': (c) => args.onError?.(c),
+      'lockout-callback': (info) => args.onLockout?.(info),
       theme: args.theme ?? 'auto',
       action: args.action,
       lang: args.lang,

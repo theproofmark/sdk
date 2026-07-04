@@ -6,7 +6,7 @@ import type { ProofMarkVerifyHandle, ProofMarkVerifyProps } from './types';
 
 export const ProofMarkVerify = forwardRef<ProofMarkVerifyHandle, ProofMarkVerifyProps>(
   function ProofMarkVerify(
-    { siteKey, onToken, onExpire, onError, theme = 'auto', action, lang, scriptBaseUrl },
+    { siteKey, onToken, onExpire, onError, onLockout, theme = 'auto', action, lang, scriptBaseUrl },
     ref
   ) {
     const containerRef = useRef<HTMLDivElement>(null);
@@ -14,9 +14,11 @@ export const ProofMarkVerify = forwardRef<ProofMarkVerifyHandle, ProofMarkVerify
     const onTokenRef = useRef(onToken);
     const onExpireRef = useRef(onExpire);
     const onErrorRef = useRef(onError);
+    const onLockoutRef = useRef(onLockout);
     onTokenRef.current = onToken;
     onExpireRef.current = onExpire;
     onErrorRef.current = onError;
+    onLockoutRef.current = onLockout;
 
     const [ready, setReady] = useState(false);
 
@@ -47,6 +49,7 @@ export const ProofMarkVerify = forwardRef<ProofMarkVerifyHandle, ProofMarkVerify
         callback: (t) => onTokenRef.current(t),
         'expired-callback': () => onExpireRef.current?.(),
         'error-callback': (c) => onErrorRef.current?.(c),
+        'lockout-callback': (info) => onLockoutRef.current?.(info),
         theme,
         action,
         lang,

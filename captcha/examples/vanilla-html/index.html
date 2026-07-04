@@ -12,9 +12,26 @@
     <form action="/login" method="POST">
       <label>Email <input type="email" name="email" required /></label>
       <!-- The widget injects a hidden input named pm-verify-response into this form. -->
-      <div class="pm-verify" data-sitekey="pmv_test_demo" data-action="login"></div>
+      <!-- data-lockout-callback fires when this visitor's fingerprint+IP is
+           under an active penalty escalation (repeated failures/fraud
+           signals) — distinct from data-error-callback, since retrying
+           immediately won't help. Optional; the checkbox still renders
+           locked either way. -->
+      <div
+        class="pm-verify"
+        data-sitekey="pmv_test_demo"
+        data-action="login"
+        data-lockout-callback="onVerifyLockout"
+      ></div>
       <button type="submit">Sign in</button>
     </form>
+
+    <script>
+      function onVerifyLockout(info) {
+        console.warn('ProofMark Verify lockout:', info);
+        // e.g. document.querySelector('button[type="submit"]').disabled = true;
+      }
+    </script>
 
     <!-- In production, load from the CDN: https://verify.proofmark.com/api.js -->
     <!-- For local dev against the built core, serve packages/core/dist/api.js: -->

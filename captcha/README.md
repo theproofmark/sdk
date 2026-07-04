@@ -13,6 +13,9 @@ a puzzle. This is the browser counterpart to the server-side `@proofmark/verify-
 
 Server-side token verification lives in `@proofmark/verify-node` (separate package).
 
+📖 **[Full end-to-end integration guide](./INTEGRATION.md)** — client setup (all
+three paths), server-side verification, local dev, security & deployment checklists.
+
 ## Quick start (vanilla)
 
 ```html
